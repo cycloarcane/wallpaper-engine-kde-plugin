@@ -14,8 +14,10 @@ Item {
 
     property var initItemOp: null
     property var _initItemOp: Boolean(initItemOp) ? initItemOp : function(){ }
-    property var readfile: null 
+    property var readfile: null
     property var _readfile: Boolean(readfile) ? readfile : function(){ return Promise.reject("read file func not available"); }
+    property var analyse_pkg: null
+    property var _analyse_pkg: Boolean(analyse_pkg) ? analyse_pkg : function(){ return Promise.resolve(null); }
 
     signal modelStartSync
     signal modelRefreshed
@@ -216,16 +218,25 @@ Item {
             const plist = []
             proxyModel.forEach((el) => {
                 // as no allSettled, catch any error
-                const p = root._readfile(Common.urlNative(Common.getWpModelProjectPath(el))).then(value => {                    
+                const p = root._readfile(Common.urlNative(Common.getWpModelProjectPath(el))).then(value => {
                         el.playlists = [];
                         root.loadItemFromJson(value, el);
                         Object.keys(root.playlists).forEach((key) => {
                             const value = root.playlists[key];
-                            if(value.has(el.path)) {       
+                            if(value.has(el.path)) {
                                 if(!el.playlists.includes(key))
                                     el.playlists.push(Object({key: key}));
                             }
                         });
+                        // For scene wallpapers, inspect the .pkg to check crash-risk factors:
+                        // scene.json version >= 4, or assets referencing other workshop items.
+                        if(el.type === "scene") {
+                            const pkgPath = Common.urlNative(el.path + "/scene.pkg");
+                            return root._analyse_pkg(pkgPath).then(info => {
+                                if(info && info.crash_risk)
+                                    el.compatibility = "crash-risk";
+                            }).catch(() => {});
+                        }
                     }).catch(reason => console.error(reason));
                 plist.push(p);
             });
