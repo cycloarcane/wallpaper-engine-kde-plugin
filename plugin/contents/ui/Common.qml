@@ -31,6 +31,13 @@ QtObject {
 
     readonly property string repo_url: 'https://github.com/catsout/wallpaper-engine-kde-plugin'
 
+    // Compatibility levels for wallpaper thumbnails
+    enum CompatLevel {
+        Stable,   // video/web — no GPU pipeline in plasmashell
+        Vulkan,   // scene — Vulkan 1.1 required, runs in-process
+        Unknown   // type not recognised
+    }
+
     readonly property var wpitem_template: ({
         workshopid: "",
         path: "", // need convert to qurl
@@ -41,7 +48,8 @@ QtObject {
         contentrating: "Everyone",
         tags: [],
         favor: false,
-        playlists: []
+        playlists: [],
+        compatibility: "unknown"   // "stable" | "vulkan" | "unknown"
     })
 
     function wpitemFromQtObject(qobj) {

@@ -43,7 +43,7 @@ Item {
     property var folderModels: []
 
     function loadItemFromJson(text, el) {
-        const project = Utils.parseJson(text);    
+        const project = Utils.parseJson(text);
         if(project !== null) {
             if("title" in project)
                 el.title = project.title;
@@ -57,6 +57,17 @@ Item {
                 el.contentrating = project.contentrating;
             if("tags" in project) {
                 el.tags = project.tags.map(el => Object({key: el}));
+            }
+
+            // Determine compatibility level from wallpaper type.
+            // scene wallpapers use the Vulkan renderer which runs inside
+            // plasmashell — a GPU fault or unsupported feature will crash KDE.
+            // video and web wallpapers are isolated and safe.
+            switch(el.type) {
+                case "video": el.compatibility = "stable";  break;
+                case "web":   el.compatibility = "stable";  break;
+                case "scene": el.compatibility = "vulkan";  break;
+                default:      el.compatibility = "unknown"; break;
             }
         }
     }
