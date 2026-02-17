@@ -259,17 +259,14 @@ RowLayout {
                                 radius: 3
                                 width: badgeRow.implicitWidth + 8
                                 height: badgeRow.implicitHeight + 4
-                                color: model.compatibility === "crash-risk" ? "#a01010"
-                                     : model.compatibility === "vulkan"     ? "#c0612b"
-                                     :                                        "#555555"
+                                color: model.compatibility === "unsupported" ? "#806000"
+                                     :                                         "#555555"
                                 opacity: 0.92
 
                                 ToolTip.visible: badgeMouse.containsMouse
                                 ToolTip.delay: 400
-                                ToolTip.text: model.compatibility === "crash-risk"
-                                    ? "Likely to crash KDE — this scene wallpaper uses a format version or\ncross-references assets from other workshop items that the renderer\ndoes not fully support. Load at your own risk."
-                                    : model.compatibility === "vulkan"
-                                    ? "Scene wallpaper — requires Vulkan 1.1+.\nRuns inside plasmashell; may crash KDE if unsupported features are used."
+                                ToolTip.text: model.compatibility === "unsupported"
+                                    ? "NO TEXT: This scene wallpaper uses text objects which are not yet supported by the renderer."
                                     : "Unknown wallpaper type — compatibility cannot be determined."
 
                                 Row {
@@ -277,19 +274,16 @@ RowLayout {
                                     anchors.centerIn: parent
                                     spacing: 3
                                     Kirigami.Icon {
-                                        source: model.compatibility === "crash-risk"
-                                            ? "dialog-error-symbolic"
-                                            : model.compatibility === "vulkan"
-                                            ? "dialog-warning-symbolic"
+                                        source: model.compatibility === "unsupported"
+                                            ? "dialog-information-symbolic"
                                             : "dialog-question-symbolic"
                                         width: 10; height: 10
                                         color: "white"
                                         isMask: true
                                     }
                                     Text {
-                                        text: model.compatibility === "crash-risk" ? "CRASH RISK"
-                                            : model.compatibility === "vulkan"     ? "VULKAN"
-                                            :                                        "?"
+                                        text: model.compatibility === "unsupported" ? "NO TEXT"
+                                            :                                         "?"
                                         color: "white"
                                         font.pixelSize: 9
                                         font.bold: true

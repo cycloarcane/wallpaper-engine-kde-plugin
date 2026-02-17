@@ -68,7 +68,7 @@ Item {
             switch(el.type) {
                 case "video": el.compatibility = "stable";  break;
                 case "web":   el.compatibility = "stable";  break;
-                case "scene": el.compatibility = "vulkan";  break;
+                case "scene": el.compatibility = "stable";  break;
                 default:      el.compatibility = "unknown"; break;
             }
         }
@@ -233,8 +233,8 @@ Item {
                         if(el.type === "scene") {
                             const pkgPath = Common.urlNative(el.path + "/scene.pkg");
                             return root._analyse_pkg(pkgPath).then(info => {
-                                if(info && info.crash_risk)
-                                    el.compatibility = "crash-risk";
+                                if(info && info.has_text)
+                                    el.compatibility = "unsupported";
                             }).catch(() => {});
                         }
                     }).catch(reason => console.error(reason));
