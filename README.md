@@ -26,6 +26,9 @@ cd wallpaper-engine-kde-plugin
 ./install.sh
 ```  
 
+> **Note for rpm-ostree / immutable Fedora systems**  
+> On Fedora variants such as Kinoite or Bazzite, `install.sh` may not be able to install build dependencies on the host.  
+> Please follow the rpm-ostree-specific instructions in [`rpm/README.md`](rpm/README.md), or use the manual build steps below if dependency installation fails.
 #### Build and Install
 ```sh
 # Download source
