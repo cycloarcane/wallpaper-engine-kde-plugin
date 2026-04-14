@@ -39,7 +39,7 @@ Item {
     
     function readfile(path) {
         return ws_server.jrpc.send("readfile", [path]).then((el) => {
-            return Qt.atob(el.result);
+            return el.result ? Qt.atob(Array.from(el.result)) : "{}";
         });
     }
     function get_dir_size(path, depth=3) {
@@ -82,7 +82,7 @@ Item {
             jrpc = new Jsonrpc.Jsonrpc(sendStr.bind(this), _createTimer);
         }
 
-        onClientConnected: {
+        onClientConnected: (webSocket) => {
             console.error("----python helper connected----")
             this.socket = webSocket;
             webSocket.onTextMessageReceived.connect((message) => {
