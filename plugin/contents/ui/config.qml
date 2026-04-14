@@ -9,6 +9,9 @@ import "page"
 ColumnLayout {
     id: root
     spacing: 5
+
+    property var configDialog
+    property var wallpaperConfiguration
     
     property string cfg_SteamLibraryPath
     property string cfg_WallpaperWorkShopId
@@ -22,6 +25,7 @@ ColumnLayout {
     property alias  cfg_Speed:               settingPage.cfg_Speed
     property alias  cfg_MuteAudio:           settingPage.cfg_MuteAudio
     property alias  cfg_MouseInput:          settingPage.cfg_MouseInput
+    property alias  cfg_AnimatedPreview:     settingPage.cfg_AnimatedPreview
     property alias  cfg_ResumeTime:          settingPage.cfg_ResumeTime
     property alias  cfg_SwitchTimer:         settingPage.cfg_SwitchTimer
     property alias  cfg_RandomizeWallpaper:  settingPage.cfg_RandomizeWallpaper
