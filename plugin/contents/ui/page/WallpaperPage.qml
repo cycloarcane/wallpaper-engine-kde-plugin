@@ -18,6 +18,8 @@ import org.kde.kcmutils as KCM
 import org.kde.kirigami 2.6 as Kirigami
 import org.kde.kquickcontrolsaddons 2.0
 
+import org.kde.plasma.plasmoid
+
 RowLayout {
     Layout.fillWidth: true
 
@@ -94,8 +96,9 @@ RowLayout {
 
                     actions: [
                         Kirigami.Action {
+                            icon.name: 'folder'
                             icon.source: Qt.resolvedUrl('../../images/folder-outline.svg')
-                            icon.color: Theme.textColor
+                            icon.color: Kirigami.Theme.textColor
                             text: 'Library'
                             tooltip: cfg_SteamLibraryPath ? cfg_SteamLibraryPath : 'Select steam library dir'
                             onTriggered: wpDialog.open()
@@ -103,14 +106,14 @@ RowLayout {
                         Kirigami.Action {
                             id: action_cb_filter
                             text: 'Filter'
-                            icon.source: Qt.resolvedUrl('../../images/filter.svg')
-                            icon.color: Theme.textColor
+                            icon.name: 'view-filter'
+                            icon.color: Kirigami.Theme.textColor
                             property int currentIndex
                             readonly property var model: Common.filterModel
                             readonly property var modelValues: Common.filterModel.getValueArray(cfg_FilterStr)
 
                             children: model.map((el, index) => comp_action_filter.createObject(null, {
-                                text: el.text, 
+                                text: el.text,
                                 act_index: index,
                                 checkable: el.type !== '_nocheck'
                             }))
@@ -118,8 +121,8 @@ RowLayout {
                         Kirigami.Action {
                             id: action_cb_sort
                             text: model[currentIndex].short
-                            icon.source: Qt.resolvedUrl('../../images/arrow-down.svg')
-                            icon.color: Theme.textColor
+                            icon.name: 'view-sort'
+                            icon.color: Kirigami.Theme.textColor
                             property int currentIndex: Common.modelIndexOfValue(model, cfg_SortMode)
                             readonly property var model: [
                                 {
@@ -141,8 +144,8 @@ RowLayout {
                             children: model.map((el, index) => comp_action_sort.createObject(null, {text: el.text, act_value: el.value}))
                         },
                         Kirigami.Action {
-                            icon.source: Qt.resolvedUrl('../../images/refresh.svg')
-                            icon.color: Theme.textColor
+                            icon.name: 'view-refresh'
+                            icon.color: Kirigami.Theme.textColor
                             text: 'Refresh'
                             onTriggered: wpListModel.refresh()
                         }
@@ -229,24 +232,53 @@ RowLayout {
                         ]
                         thumbnail: Rectangle {
                             anchors.fill: parent
+                            color: "transparent"
+
+                            Loader {
+                                anchors.fill: parent
+                                id: imgPre
+                                sourceComponent: wallpaper.configuration.AnimatedPreview ? firstType : secondType
+                            }
+
                             Kirigami.Icon {
                                 anchors.centerIn: parent
                                 width: root.iconSizes.large
                                 height: width
                                 source: "view-preview"
-                                visible: !imgPre.visible
+                                visible: imgPre.status !== Loader.Ready || (imgPre.item && !imgPre.item.visible)
                             }
-                            Image {
-                                id: imgPre
-                                anchors.fill: parent
-                                source: Common.getWpModelPreviewSource(model);
-                                sourceSize.width: parent.width
-                                sourceSize.height: parent.height
-                                fillMode: Image.PreserveAspectCrop
-                                cache: false
-                                asynchronous: true
-                                smooth: true
-                                visible: Boolean(preview)
+
+                            Component {
+                                id: firstType
+                                AnimatedImage {
+                                    id: _imgPre
+                                    anchors.fill: parent
+                                    source: Common.getWpModelPreviewSource(model)
+                                    sourceSize.width: parent.width
+                                    fillMode: Image.PreserveAspectCrop
+                                    clip: true
+                                    cache: false
+                                    asynchronous: true
+                                    paused: false
+                                    onVisibleChanged: paused = !visible
+                                    onStatusChanged: playing = (status == AnimatedImage.Ready)
+                                }
+                            }
+
+                            Component {
+                                id: secondType
+                                Image {
+                                    id: _imgPre
+                                    anchors.fill: parent
+                                    source: Common.getWpModelPreviewSource(model);
+                                    sourceSize.width: parent.width
+                                    sourceSize.height: parent.height
+                                    fillMode: Image.PreserveAspectCrop
+                                    cache: false
+                                    asynchronous: true
+                                    smooth: true
+                                    visible: Boolean(preview)
+                                }
                             }
 
                             // Compatibility badge — shown for non-stable wallpapers
@@ -381,7 +413,7 @@ RowLayout {
         bottomPadding: 0
 
         background: Rectangle {
-            color: Theme.view.backgroundColor
+            color: Kirigami.Theme.backgroundColor
         }
 
         contentItem: Flickable {
@@ -424,7 +456,7 @@ RowLayout {
                     Layout.minimumHeight: implicitHeight
 
                     text: right_content.wpmodel.title
-                    color: Theme.textColor
+                    color: Kirigami.Theme.textColor
                     font.bold: true
                     textFormat: Text.PlainText
                     wrapMode: Text.Wrap
@@ -443,11 +475,11 @@ RowLayout {
                         bottomPadding: topPadding
 
                         background: Rectangle {
-                            color: Theme.view.positiveBackgroundColor
+                            color: Kirigami.Theme.positiveBackgroundColor
                             radius: 8
                         }
                         contentItem: Text {
-                            color: Theme.view.textColor
+                            color: Kirigami.Theme.textColor
                             font.capitalization: Font.Capitalize
                             text: right_content.wpmodel.type
                         }
@@ -463,11 +495,11 @@ RowLayout {
                         visible: false
 
                         background: Rectangle {
-                            color: Theme.view.positiveBackgroundColor
+                            color: Kirigami.Theme.positiveBackgroundColor
                             radius: 8
                         }
                         contentItem: Text {
-                            color: Theme.view.textColor
+                            color: Kirigami.Theme.textColor
                             font.capitalization: Font.Capitalize
                             readonly property bool _set_text: {
                                 const dir = right_content.wpmodel.path;
@@ -484,35 +516,55 @@ RowLayout {
                         }
                     }
 
-                    Kirigami.ActionToolBar {
-                        Layout.fillWidth: false
-                        Layout.preferredWidth: implicitWidth
-                        flat: true
-
-                        actions: [
-                            Kirigami.Action {
-                                id: right_act_favor
-                                icon.color: Theme.textColor
-                                icon.source: right_content.wpmodel.favor 
-                                    ? Qt.resolvedUrl('../../images/bookmark.svg')
-                                    : Qt.resolvedUrl('../../images/bookmark-outline-add.svg')
-                                tooltip: right_content.wpmodel.favor
-                                    ? 'Remove from favorites'
-                                    : 'Add to favorites'
-                                onTriggered: picViewLoader.item.toggleFavor(right_content.wpmodel)
-                            },
-                            Kirigami.Action {
-                                icon.source: Qt.resolvedUrl('../../images/link.svg')
-                                tooltip: "Open Workshop Link"
-                                enabled: right_content.wpmodel.workshopid.match(Common.regex_workshop_online)
-                                onTriggered: Qt.openUrlExternally(Common.getWorkshopUrl(right_content.wpmodel.workshopid))
-                            },
-                            Kirigami.Action {
-                                icon.source: Qt.resolvedUrl('../../images/folder-outline.svg')
-                                tooltip: "Open Containing Folder"
-                                onTriggered: Qt.openUrlExternally(right_content.wpmodel.path) 
+                    ToolButton {
+                        contentItem: Item{
+                            IconSvg {
+                                width: 20
+                                height: 20
+                                anchors.centerIn: parent
+                                source: right_content.wpmodel.favor
+                                ? Qt.resolvedUrl('../../images/bookmark.svg')
+                                : Qt.resolvedUrl('../../images/bookmark-outline-add.svg')
+                                color: Kirigami.Theme.textColor
                             }
-                        ]
+                        }
+                        ToolTip.text: right_content.wpmodel.favor ? 'Remove from favorites' : 'Add to favorites'
+                        ToolTip.visible: hovered
+                        ToolTip.delay: 500
+                        onClicked: picViewLoader.item.toggleFavor(right_content.wpmodel)
+                    }
+
+                    ToolButton {
+                        contentItem: Item {
+                            IconSvg {
+                                width: 20
+                                height: 20
+                                anchors.centerIn: parent
+                                source: Qt.resolvedUrl('../../images/link.svg')
+                                color: Kirigami.Theme.textColor
+                            }
+                        }
+                        ToolTip.text: "Open Workshop Link"
+                        ToolTip.visible: hovered
+                        ToolTip.delay: 500
+                        enabled: right_content.wpmodel.workshopid.match(Common.regex_workshop_online)
+                        onClicked: Qt.openUrlExternally(Common.getWorkshopUrl(right_content.wpmodel.workshopid))
+                    }
+
+                    ToolButton {
+                        contentItem: Item {
+                            IconSvg {
+                                width: 20
+                                height: 20
+                                anchors.centerIn: parent
+                                source: Qt.resolvedUrl('../../images/folder-outline.svg')
+                                color: Kirigami.Theme.textColor
+                            }
+                        }
+                        ToolTip.text: "Open Containing Folder"
+                        ToolTip.visible: hovered
+                        ToolTip.delay: 500
+                        onClicked: Qt.openUrlExternally(right_content.wpmodel.path)
                     }
                 }
 
@@ -548,11 +600,11 @@ RowLayout {
                         bottomPadding: topPadding
 
                         background: Rectangle {
-                            color: Theme.activeBackgroundColor
+                            color: Kirigami.Theme.activeBackgroundColor
                             radius: 8
                         }
                         contentItem: Text {
-                            color: Theme.view.textColor
+                            color: Kirigami.Theme.textColor
                             text: model.key
                         }
                     }
@@ -665,9 +717,9 @@ RowLayout {
                     }
 
                     header.text: 'Option'
-                    header.text_color: Theme.textColor
+                    header.text_color: Kirigami.Theme.textColor
                     header.icon: '../../images/cheveron-down.svg'
-                    header.color: Theme.activeBackgroundColor
+                    header.color: Kirigami.Theme.activeBackgroundColor
 
                     header.actor: Kirigami.ActionToolBar {
                         Layout.fillWidth: true
@@ -742,7 +794,7 @@ RowLayout {
                         ]
                         OptionItem {
                             text: modelData.text
-                            text_color: Theme.textColor
+                            text_color: Kirigami.Theme.textColor
 
                             property bool is_changed: right_opts.config && 
                                 right_opts.config_changes && 
@@ -782,7 +834,7 @@ RowLayout {
 
                     visible: false
                     text: ''
-                    color: Theme.textColor
+                    color: Kirigami.Theme.textColor
                     readonly property bool _set_text: {
                         const path = Common.getWpModelProjectPath(right_content.wpmodel);
                         if(path) {

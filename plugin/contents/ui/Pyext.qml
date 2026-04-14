@@ -39,7 +39,7 @@ Item {
     
     function readfile(path) {
         return ws_server.jrpc.send("readfile", [path]).then((el) => {
-            return Qt.atob(el.result);
+            return Qt.atob(Array.from(el.result));
         });
     }
     function get_dir_size(path, depth=3) {

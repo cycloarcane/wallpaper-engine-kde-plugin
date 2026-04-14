@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" xmlns:bx="https://boxy-svg.com">
+  <defs>
+    <bx:export>
+      <bx:file format="png" href="#object-0"/>
+    </bx:export>
+    <style bx:fonts="Amiko">@import url(https://fonts.googleapis.com/css2?family=Amiko%3Aital%2Cwght%400%2C400%3B0%2C600%3B0%2C700&amp;display=swap);</style>
+  </defs>
+  <text style="font-family: &quot;Amiko&quot;; font-size: 14px; text-anchor: middle; white-space: pre; transform-origin: 0.003999px -2.97233px 0px;" transform="matrix(0.840336, 0, 0, 0.857143, 9.996001, 1.672332)" id="object-0" x="0.004" y="13.851">GIF</text>
+</svg>

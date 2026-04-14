@@ -1,5 +1,4 @@
 singleton Common Common.qml
-singleton Theme Theme.qml
 
 WindowModel WindowModel.qml
 PowerSource PowerSource.qml
