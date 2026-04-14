@@ -242,13 +242,14 @@ RowLayout {
 
                             Loader {
                                 anchors.fill: parent
+                                id: imgPre
                                 sourceComponent: wallpaper.configuration.AnimatedPreview ? firstType : secondType
                             }
 
                             Component {
                                 id: firstType
                                 AnimatedImage {
-                                    id: imgPre;
+                                    id: _imgPre
                                     anchors.fill: parent
                                     source: Common.getWpModelPreviewSource(model)
                                     sourceSize.width: parent.width
@@ -265,7 +266,7 @@ RowLayout {
                             Component {
                                 id: secondType
                                 Image {
-                                    id: imgPre
+                                    id: _imgPre
                                     anchors.fill: parent
                                     source: Common.getWpModelPreviewSource(model);
                                     sourceSize.width: parent.width

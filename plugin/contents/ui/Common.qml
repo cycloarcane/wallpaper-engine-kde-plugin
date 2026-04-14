@@ -256,7 +256,7 @@ QtObject {
             favor: new Set()
         };
         try {
-            const jsonStr = Qt.atob(data);
+            const jsonStr = Qt.atob(Array.from(data));
             Object.assign(conf, Utils.parseJson(jsonStr));
             conf.favor = new Set(conf.favor);
             return conf;
