@@ -18,6 +18,8 @@ import org.kde.kcmutils as KCM
 import org.kde.kirigami 2.6 as Kirigami
 import org.kde.kquickcontrolsaddons 2.0
 
+import org.kde.plasma.plasmoid
+
 RowLayout {
     Layout.fillWidth: true
 
@@ -237,17 +239,43 @@ RowLayout {
                                 source: "view-preview"
                                 visible: !imgPre.visible
                             }
-                            Image {
-                                id: imgPre
+
+                            Loader {
                                 anchors.fill: parent
-                                source: Common.getWpModelPreviewSource(model);
-                                sourceSize.width: parent.width
-                                sourceSize.height: parent.height
-                                fillMode: Image.PreserveAspectCrop
-                                cache: false
-                                asynchronous: true
-                                smooth: true
-                                visible: Boolean(preview)
+                                sourceComponent: wallpaper.configuration.AnimatedPreview ? firstType : secondType
+                            }
+
+                            Component {
+                                id: firstType
+                                AnimatedImage {
+                                    id: imgPre;
+                                    anchors.fill: parent
+                                    source: Common.getWpModelPreviewSource(model)
+                                    sourceSize.width: parent.width
+                                    fillMode: Image.PreserveAspectCrop
+                                    clip: true
+                                    cache: false
+                                    asynchronous: true
+                                    paused: false
+                                    onVisibleChanged: paused = !visible
+                                    onStatusChanged: playing = (status == AnimatedImage.Ready)
+                                }
+                            }
+
+                            Component {
+                                id: secondType
+                                Image {
+                                    id: imgPre
+                                    anchors.fill: parent
+                                    source: Common.getWpModelPreviewSource(model);
+                                    sourceSize.width: parent.width
+                                    sourceSize.height: parent.height
+                                    fillMode: Image.PreserveAspectCrop
+                                    cache: false
+                                    asynchronous: true
+                                    smooth: true
+                                    visible: Boolean(preview)
+                                }
                             }
 
                             // Compatibility badge — shown for non-stable wallpapers
