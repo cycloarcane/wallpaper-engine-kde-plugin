@@ -232,18 +232,20 @@ RowLayout {
                         ]
                         thumbnail: Rectangle {
                             anchors.fill: parent
-                            Kirigami.Icon {
-                                anchors.centerIn: parent
-                                width: root.iconSizes.large
-                                height: width
-                                source: "view-preview"
-                                visible: !imgPre.visible
-                            }
+                            color: "transparent"
 
                             Loader {
                                 anchors.fill: parent
                                 id: imgPre
                                 sourceComponent: wallpaper.configuration.AnimatedPreview ? firstType : secondType
+                            }
+
+                            Kirigami.Icon {
+                                anchors.centerIn: parent
+                                width: root.iconSizes.large
+                                height: width
+                                source: "view-preview"
+                                visible: imgPre.status !== Loader.Ready || (imgPre.item && !imgPre.item.visible)
                             }
 
                             Component {
